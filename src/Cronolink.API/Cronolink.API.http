@@ -1,6 +1,6 @@
-@Cronolink.API_HostAddress = http://localhost:5296
+@Cronolink.Api_HostAddress = http://localhost:5298
 
-GET {{Cronolink.API_HostAddress}}/weatherforecast/
+GET {{Cronolink.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

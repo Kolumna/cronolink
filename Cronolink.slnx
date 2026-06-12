@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Cronolink.Api/Cronolink.Api.csproj" />
+    <Project Path="src/Cronolink.Core/Cronolink.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Cronolink.Tests/Cronolink.Tests.csproj" />
+  </Folder>
+</Solution>
