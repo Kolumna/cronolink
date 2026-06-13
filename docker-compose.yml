@@ -17,6 +17,19 @@ services:
         interval: 5s
         timeout: 5s
         retries: 5
+    cronolink-api:
+      build:
+        context: .
+        dockerfile: src/Cronolink.API/Dockerfile
+      ports:
+        - "8080:8080"
+      env_file:
+        - src/Cronolink.API/.env
+      depends_on:
+        cronolink-db:
+          condition: service_healthy
+      networks:
+        - cronolink-network
 volumes:
   postgres_data:
     driver: local
