@@ -3,11 +3,13 @@ using Cronolink.Core.Exceptions;
 using Cronolink.Core.Interfaces;
 using Cronolink.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cronolink.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ProjectsController(IProjectRepository repo) : ControllerBase
 {
     [HttpGet]
