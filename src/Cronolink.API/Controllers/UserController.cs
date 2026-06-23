@@ -43,18 +43,6 @@ public class UserController(IUserRepository repo) : ControllerBase
     return CreatedAtAction(nameof(GetById), new { id = user.Id }, ToDto(user));
   }
 
-  [HttpPost("login")]
-  public async Task<IActionResult> Login(LoginUserRequest req)
-  {
-    var user = await repo.GetByEmailAsync(req.Email) ?? throw new UnauthorizedAccessException("Invalid credentials");
-    if (user == null || !BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
-    {
-      throw new UnauthorizedAccessException("Invalid credentials");
-    }
-    var token = GenerateJwtToken(user);
-    return Ok(new AuthResponse(token));
-  }
-
   [HttpPut("{id:guid}")]
   public async Task<IActionResult> Update(Guid id, UpdateUserRequest req)
   {
@@ -76,34 +64,4 @@ public class UserController(IUserRepository repo) : ControllerBase
   }
 
   private static UserDto ToDto(User u) => new(u.Id, u.Email);
-
-  private static string GenerateJwtToken(User user)
-  {
-    var claims = new[]
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Role, user.Role.ToString())
-    };
-
-    var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
-        ?? throw new Exception("JWT_KEY environment variable is missing.");
-
-    var key = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-    var creds = new Microsoft.IdentityModel.Tokens.SigningCredentials(key, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256);
-
-    var tokenDescriptor = new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
-    {
-      Subject = new ClaimsIdentity(claims),
-      Expires = DateTime.UtcNow.AddHours(2),
-      Issuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
-      Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
-      SigningCredentials = creds
-    };
-
-    var tokenHandler = new JwtSecurityTokenHandler();
-    var token = tokenHandler.CreateToken(tokenDescriptor);
-
-    return tokenHandler.WriteToken(token);
-  }
 }

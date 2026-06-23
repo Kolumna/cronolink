@@ -7,6 +7,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +26,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.ToTable("projects");
             e.Property(p => p.Name).HasMaxLength(200).IsRequired();
+            e.Property(p => p.CreatedAt).HasDefaultValueSql("now()");
+            e.Property(p => p.UpdatedAt).HasDefaultValueSql("now()");
+        });
+        modelBuilder.Entity<RefreshToken>(e =>
+        {
+            e.ToTable("refresh_tokens");
+            e.Property(p => p.TokenHash).HasMaxLength(200).IsRequired();
+            e.Property(p => p.IsRevoked).HasDefaultValue(false);
             e.Property(p => p.CreatedAt).HasDefaultValueSql("now()");
             e.Property(p => p.UpdatedAt).HasDefaultValueSql("now()");
         });

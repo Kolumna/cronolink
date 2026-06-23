@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cronolink.Infrastructure.Repositories;
 
-public class UserRepository(AppDbContext db) : IUserRepository
+public class AuthRepository(AppDbContext db) : IUserRepository
 {
     public Task<List<User>> GetAllAsync(CancellationToken ct = default)
     {
