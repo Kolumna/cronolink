@@ -43,13 +43,26 @@ public class AuthController(IUserRepository userRepo, IRefreshTokenRepository re
 
     await refreshRepo.CreateAsync(refreshToken);
 
+    var cookieOptions = new CookieOptions
+    {
+      HttpOnly = true,
+      Secure = Request.IsHttps,
+      SameSite = SameSiteMode.Strict,
+      Expires = DateTime.UtcNow.AddDays(7)
+    };
+
+    Response.Cookies.Append("refreshToken", rawRefreshToken, cookieOptions);
+
     return Ok(new AuthResponse(token, rawRefreshToken));
   }
 
   [HttpPost("refresh")]
-  public async Task<IActionResult> Refresh(RefreshTokenRequest req)
+  public async Task<IActionResult> Refresh()
   {
-    var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(req.RefreshToken));
+    var refreshTokenCookie = Request.Cookies["refreshToken"];
+    if (string.IsNullOrEmpty(refreshTokenCookie)) return Unauthorized();
+
+    var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(refreshTokenCookie));
     var refreshTokenHash = Convert.ToBase64String(hashBytes);
 
     var refreshToken = await refreshRepo.GetByTokenHashAsync(refreshTokenHash);
@@ -83,7 +96,34 @@ public class AuthController(IUserRepository userRepo, IRefreshTokenRepository re
 
     await refreshRepo.CreateAsync(newRefreshToken);
 
+    var cookieOptions = new CookieOptions
+    {
+      HttpOnly = true,
+      Secure = Request.IsHttps,
+      SameSite = SameSiteMode.Strict,
+      Expires = DateTime.UtcNow.AddDays(7)
+    };
+
+    Response.Cookies.Append("refreshToken", newRawRefreshToken, cookieOptions);
+
     return Ok(new AuthResponse(newJwtToken, newRawRefreshToken));
+  }
+
+  [HttpPost("logout")]
+  public async Task<IActionResult> Logout()
+  {
+    var refreshTokenCookie = Request.Cookies["refreshToken"];
+    if (!string.IsNullOrEmpty(refreshTokenCookie))
+    {
+      var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(refreshTokenCookie));
+      var refreshTokenHash = Convert.ToBase64String(hashBytes);
+
+      await refreshRepo.RevokeAsync(refreshTokenHash);
+    }
+
+    Response.Cookies.Delete("refreshToken");
+
+    return Ok(new { message = "Logged out successfully" });
   }
 
   private static string GenerateJwtToken(User user)

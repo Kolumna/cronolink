@@ -1,17 +1,11 @@
-import { createContext } from "react";
+import { createContext } from 'react';
+type User = { id: string; email: string; role: string };
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
+type AuthContextValue = {
+  user: User | null;
+  status: "idle" | "loading" | "authenticated" | "unauthenticated";
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
-interface AuthContextType {
-  token: string | null;
-  user: User | null;
-  login: (token: string) => void;
-  logout: () => void;
-  isAuthenticated: boolean;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextValue | null>(null);

@@ -1,40 +1,82 @@
+import { apiFetch, getAccessToken, setAccessToken } from "@/api/httpClient";
 import { AuthContext } from "@/contexts/AuthContext";
-import { useState } from "react";
-
-function parseJwt(token: string) {
-  try {
-    const base64 = token.split(".")[1];
-    const json = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
-}
+import { jwtDecode } from "jwt-decode";
+import { useCallback, useEffect, useState } from "react";
+import type { Status, User } from "./types";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [token, setToken] = useState<string | null>(() => {
-    const storedToken = localStorage.getItem("cronolink_token");
-    return storedToken || null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [status, setStatus] = useState<Status>("loading");
 
-  const login = (newToken: string) => {
-    localStorage.setItem("cronolink_token", newToken);
-    setToken(newToken);
-  };
+  const tryRestoreSession = useCallback(async () => {
+    const res = await apiFetch("/api/auth/refresh", { method: "POST" });
 
-  const logout = () => {
-    localStorage.removeItem("cronolink_token");
-    setToken(null);
-  };
+    if (!res.ok) {
+      setAccessToken(null);
+      setUser(null);
+      setStatus("unauthenticated");
+      return;
+    }
 
-  const isAuthenticated = !!token;
+    const data = await res.json();
+    setAccessToken(data.accessToken);
+    setUser(data.user);
+    setStatus("authenticated");
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void tryRestoreSession();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [tryRestoreSession]);
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token || status !== "authenticated") return;
+
+    const { exp } = jwtDecode<{ exp: number }>(token);
+    const refreshInMs = exp * 1000 - Date.now() - 60_000;
+
+    const timer = setTimeout(tryRestoreSession, Math.max(refreshInMs, 0));
+    return () => clearTimeout(timer);
+  }, [status, tryRestoreSession]);
+
+  async function login(email: string, password: string) {
+    const res = await apiFetch("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        "Login failed. Please check your credentials and try again.",
+      );
+    }
+
+    const data = await res.json();
+
+    setAccessToken(data.accessToken);
+    setUser(data.user);
+    setStatus("authenticated");
+  }
+
+  async function logout() {
+    const res = await apiFetch("/api/auth/logout", { method: "POST" });
+    if (!res.ok) {
+      throw new Error("Logout failed. Please try again.");
+    }
+    
+    setAccessToken(null);
+    setUser(null);
+    setStatus("unauthenticated");
+  }
 
   return (
-    <AuthContext.Provider
-      value={{ token, login, logout, isAuthenticated, user: token ? parseJwt(token) : null }}
-    >
+    <AuthContext.Provider value={{ login, logout, user, status }}>
       {children}
     </AuthContext.Provider>
   );
