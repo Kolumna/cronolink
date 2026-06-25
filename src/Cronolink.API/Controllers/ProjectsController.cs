@@ -28,7 +28,7 @@ public class ProjectsController(IProjectRepository repo) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateProjectRequest req)
     {
-        var project = await repo.CreateAsync(new Project { Name = req.Name });
+        var project = await repo.CreateAsync(new Project { Name = req.Name, Description = req.Description });
         return CreatedAtAction(nameof(GetById), new { id = project.Id }, ToDto(project));
     }
 
@@ -37,6 +37,8 @@ public class ProjectsController(IProjectRepository repo) : ControllerBase
     {
         var project = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Project {id} not found");
         project.Name = req.Name;
+        project.Description = req.Description;
+        project.UpdatedAt = DateTime.UtcNow;
         await repo.UpdateAsync(project);
         return Ok(ToDto(project));
     }
@@ -49,5 +51,5 @@ public class ProjectsController(IProjectRepository repo) : ControllerBase
         return NoContent();
     }
 
-    private static ProjectDto ToDto(Project p) => new(p.Id, p.Name, p.CreatedAt);
+    private static ProjectDto ToDto(Project p) => new(p.Id, p.Name, p.Description, p.UpdatedAt, p.CreatedAt);
 }

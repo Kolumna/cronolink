@@ -20,8 +20,8 @@ async function refreshAccessToken(): Promise<string | null> {
     if (!res.ok) return null;
 
     const data = await res.json();
-    setAccessToken(data.accessToken);
-    return data.accessToken;
+    setAccessToken(data.token);
+    return data.token;
   } catch {
     return null;
   }

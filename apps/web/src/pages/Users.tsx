@@ -1,17 +1,31 @@
 import { apiFetch } from "@/api/httpClient";
-import { ProjectGrid } from "@/components/projects-grid";
 import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
 import { useQuery } from "@tanstack/react-query";
-import { CuboidIcon, PlusIcon } from "lucide-react";
+import { type ColumnDef } from "@tanstack/react-table";
+import { CuboidIcon, PlusIcon, UsersIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export type Project = {
+type Project = {
   id: string;
   name: string;
   createdAt: string;
 };
 
-export default function Projects() {
+const columns: ColumnDef<Project>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => (
+      <Button variant="link" asChild>
+        <Link to={`/projects/${row.original.id}`}>{row.original.name}</Link>
+      </Button>
+    ),
+  },
+  { accessorKey: "createdAt", header: "Created At" },
+];
+
+export default function Users() {
   const query = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
@@ -26,11 +40,11 @@ export default function Projects() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <CuboidIcon />
-            Projekty
+            <UsersIcon />
+            Użytkownicy
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Tutaj możesz zarządzać swoimi projektami.
+            Tutaj możesz zarządzać swoimi użytkownikami.
           </p>
         </div>
 
@@ -43,7 +57,7 @@ export default function Projects() {
       </div>
 
       <div className="w-full mt-8">
-        <ProjectGrid projects={query.data || []} />
+        <DataTable columns={columns} data={query.data || []} />
       </div>
     </>
   );

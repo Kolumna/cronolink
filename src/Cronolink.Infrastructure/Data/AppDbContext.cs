@@ -26,6 +26,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.ToTable("projects");
             e.Property(p => p.Name).HasMaxLength(200).IsRequired();
+            e.Property(p => p.Description).HasMaxLength(1000);
             e.Property(p => p.CreatedAt).HasDefaultValueSql("now()");
             e.Property(p => p.UpdatedAt).HasDefaultValueSql("now()");
         });
