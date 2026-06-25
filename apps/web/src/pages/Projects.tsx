@@ -1,15 +1,10 @@
 import { apiFetch } from "@/api/httpClient";
 import { ProjectGrid } from "@/components/projects-grid";
 import { Button } from "@/components/ui/button";
+import type { Project } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { CuboidIcon, PlusIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-
-export type Project = {
-  id: string;
-  name: string;
-  createdAt: string;
-};
 
 export default function Projects() {
   const query = useQuery({
@@ -34,7 +29,7 @@ export default function Projects() {
           </p>
         </div>
 
-        <Button variant="default" size="lg" asChild>
+        <Button onClick={() => {}} variant="default" size="lg" asChild>
           <Link to="/projects/add">
             <PlusIcon />
             Dodaj Projekt
@@ -42,9 +37,13 @@ export default function Projects() {
         </Button>
       </div>
 
-      <div className="w-full mt-8">
-        <ProjectGrid projects={query.data || []} />
-      </div>
+      {!query.isPending ? (
+        <div className="w-full mt-8">
+          <ProjectGrid projects={query.data || []} />
+        </div>
+      ) : (
+        <span>Ładowanie...</span>
+      )}
     </>
   );
 }

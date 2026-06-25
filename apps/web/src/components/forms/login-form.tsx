@@ -56,7 +56,7 @@ export function LoginForm({
     try {
       await login(output.email, output.password)
       toast.success("Pomyślnie zalogowano!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast.error(
         error instanceof Error

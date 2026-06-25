@@ -1,37 +1,70 @@
 import { apiFetch } from "@/api/httpClient";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
+import type { User } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { type ColumnDef } from "@tanstack/react-table";
-import { CuboidIcon, PlusIcon, UsersIcon } from "lucide-react";
+import { PlusIcon, UsersIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
-type Project = {
-  id: string;
-  name: string;
-  createdAt: string;
+const getRoleColor = (role: string) => {
+  switch (role) {
+    case "1":
+      return "bg-red-100 text-red-800";
+    case "0":
+      return "bg-blue-100 text-blue-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
 };
 
-const columns: ColumnDef<Project>[] = [
+const getRoleLabel = (role: string) => {
+  switch (role) {
+    case "1":
+      return "Administrator";
+    case "0":
+      return "Użytkownik";
+    default:
+      return "Nieznana rola";
+  }
+};
+
+const columns: ColumnDef<User>[] = [
   {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => (
-      <Button variant="link" asChild>
-        <Link to={`/projects/${row.original.id}`}>{row.original.name}</Link>
-      </Button>
+    accessorKey: "firstName",
+    header: "Imię",
+    cell: (info) => info.getValue() || "Brak",
+  },
+  {
+    accessorKey: "lastName",
+    header: "Nazwisko",
+    cell: (info) => info.getValue() || "Brak",
+  },
+  {
+    accessorKey: "role",
+    header: "Rola",
+    cell: (info) => (
+      <Badge className={getRoleColor(String(info.getValue()))}>
+        {getRoleLabel(String(info.getValue())) || "Brak"}
+      </Badge>
     ),
   },
-  { accessorKey: "createdAt", header: "Created At" },
+  { accessorKey: "email", header: "Email" },
+  {
+    accessorKey: "createdAt",
+    header: "Utworzony",
+    cell: (info) => new Date(info.getValue() as string).toLocaleString(),
+  },
 ];
 
 export default function Users() {
   const query = useQuery({
-    queryKey: ["projects"],
+    queryKey: ["users"],
     queryFn: async () => {
-      const res = await apiFetch("/api/projects", { method: "GET" });
-      if (!res.ok) throw new Error("Nie udało się pobrać projektów");
-      return res.json() as Promise<Project[]>;
+      const res = await apiFetch("/api/users", { method: "GET" });
+      if (!res.ok) throw new Error("Nie udało się pobrać użytkowników");
+      return res.json() as Promise<User[]>;
     },
   });
 
@@ -51,7 +84,7 @@ export default function Users() {
         <Button variant="default" size="lg" asChild>
           <Link to="/projects/add">
             <PlusIcon />
-            Dodaj Projekt
+            Dodaj Użytkownika
           </Link>
         </Button>
       </div>

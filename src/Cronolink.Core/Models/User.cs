@@ -16,4 +16,7 @@ public class User
   public UserRole Role { get; set; } = UserRole.User;
   public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
   public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+  public bool MustChangePassword { get; set; }
+  public bool IsProfileComplete { get; set; }
 }

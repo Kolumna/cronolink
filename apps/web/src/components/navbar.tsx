@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 const navItems = [
   {
     label: "Panel główny",
-    href: "/",
+    href: "/dashboard",
     icon: <LayoutDashboardIcon />,
   },
   {
@@ -33,7 +33,7 @@ export const Navbar = () => {
         {navItems.map((item) => (
           <li key={item.href}>
             <Button
-              variant={pathname === item.href ? "default" : "ghost"}
+              variant={pathname.includes(item.href) ? "default" : "ghost"}
               size="lg"
               className="w-full justify-start px-4 h-12"
               asChild

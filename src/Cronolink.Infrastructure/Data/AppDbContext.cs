@@ -27,8 +27,22 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.ToTable("projects");
             e.Property(p => p.Name).HasMaxLength(200).IsRequired();
             e.Property(p => p.Description).HasMaxLength(1000);
+            e.Property(p => p.GithubUrl).HasMaxLength(200);
+            e.HasMany(p => p.Passwords)
+                .WithOne(pp => pp.Project)
+                .HasForeignKey(pp => pp.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.Property(p => p.StartedAt);
+            e.Property(p => p.FinishedAt);
             e.Property(p => p.CreatedAt).HasDefaultValueSql("now()");
             e.Property(p => p.UpdatedAt).HasDefaultValueSql("now()");
+        });
+        modelBuilder.Entity<ProjectPassword>(e =>
+        {
+            e.ToTable("project_passwords");
+            e.Property(p => p.Name).HasMaxLength(200).IsRequired();
+            e.Property(p => p.Value).HasMaxLength(200).IsRequired();
+            e.Property(p => p.ProjectId).IsRequired();
         });
         modelBuilder.Entity<RefreshToken>(e =>
         {

@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
-import { Header } from "./components/header";
-import { Navbar } from "./components/navbar";
+import { Header } from "../components/header";
+import { Navbar } from "../components/navbar";
 
-export function Layout() {
+export function DashboardLayout() {
   return (
     <main className="h-full flex flex-col min-h-screen">
       <Header />

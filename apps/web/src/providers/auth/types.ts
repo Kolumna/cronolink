@@ -4,4 +4,4 @@ export type User = {
   role: string;
 }
 
-export type Status = "loading" | "authenticated" | "unauthenticated";
+export type Status = "loading" | "authenticated" | "unauthenticated" | "mustChangePassword";

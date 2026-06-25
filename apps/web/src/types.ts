@@ -10,7 +10,15 @@ export type Project = {
   id: string;
   name: string;
   description?: string;
+  githubUrl?: string;
+  startedAt?: string;
+  finishedAt?: string;
+  passwords: ProjectPassword[];
   createdAt: string;
   updatedAt: string;
-  userId: string;
+}
+
+type ProjectPassword = {
+  name: string;
+  value: string;
 }

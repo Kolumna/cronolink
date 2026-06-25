@@ -14,7 +14,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowUpRightIcon,
   CalendarIcon,
-  EditIcon,
   EllipsisVertical,
   FolderCodeIcon,
   TrashIcon,
@@ -57,7 +56,6 @@ export const ProjectGrid = ({ projects }: { projects: Project[] }) => {
   });
   return (
     <div>
-      {" "}
       {projects.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {projects.map((project) => (
@@ -78,9 +76,6 @@ export const ProjectGrid = ({ projects }: { projects: Project[] }) => {
                       <DropdownMenuContent>
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-                          <DropdownMenuItem>
-                            <EditIcon /> Edytuj
-                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.preventDefault();
@@ -125,8 +120,7 @@ export const ProjectGrid = ({ projects }: { projects: Project[] }) => {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent className="flex-row justify-center gap-2">
-            <Button>Utwórz Projekt</Button>
-            <Button variant="outline">Importuj Projekt</Button>
+              <Link to="/projects/add"><Button>Utwórz Projekt</Button></Link>
           </EmptyContent>
           <Button
             variant="link"

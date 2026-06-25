@@ -59,8 +59,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const data = await res.json();
 
-    setAccessToken(data.accessToken);
+    setAccessToken(data.token);
     setUser(data.user);
+
+    if(data.mustChangePassword) {
+      setStatus("mustChangePassword");
+      return;
+    }
+
     setStatus("authenticated");
   }
 

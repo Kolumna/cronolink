@@ -9,13 +9,13 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
 {
     public Task<List<Project>> GetAllAsync()
     {
-        return db.Projects.ToListAsync();
+        return db.Projects.Include(p => p.Passwords).ToListAsync();
     }
 
 
-    public Task<Project?> GetByIdAsync(int id)
+    public Task<Project?> GetByIdAsync(Guid id)
     {
-        return db.Projects.FirstOrDefaultAsync(p => p.Id == id);
+        return db.Projects.Include(p => p.Passwords).FirstOrDefaultAsync(p => p.Id == id);
     }
 
 
@@ -33,7 +33,7 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
         return project;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         await db.Projects.Where(p => p.Id == id).ExecuteDeleteAsync();
     }

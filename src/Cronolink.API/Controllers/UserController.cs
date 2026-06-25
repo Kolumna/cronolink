@@ -12,7 +12,8 @@ using System.Text;
 namespace Cronolink.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/users")]
+[Authorize]
 public class UserController(IUserRepository repo) : ControllerBase
 {
   [HttpGet]
@@ -63,5 +64,5 @@ public class UserController(IUserRepository repo) : ControllerBase
     return NoContent();
   }
 
-  private static UserDto ToDto(User u) => new(u.Id, u.Email);
+  private static UserDto ToDto(User u) => new(u.Id, u.Email, u.FirstName, u.LastName, u.Role, u.UpdatedAt, u.CreatedAt);
 }

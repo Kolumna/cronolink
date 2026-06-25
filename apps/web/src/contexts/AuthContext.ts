@@ -1,9 +1,10 @@
-import { createContext } from 'react';
-type User = { id: string; email: string; role: string };
+import type { Status } from "@/providers/auth/types";
+import type { User } from "@/types";
+import { createContext } from "react";
 
 type AuthContextValue = {
   user: User | null;
-  status: "idle" | "loading" | "authenticated" | "unauthenticated";
+  status: Status;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };

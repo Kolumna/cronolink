@@ -53,7 +53,7 @@ public class AuthController(IUserRepository userRepo, IRefreshTokenRepository re
 
     Response.Cookies.Append("refreshToken", rawRefreshToken, cookieOptions);
 
-    return Ok(new AuthResponse(token, rawRefreshToken));
+    return Ok(new AuthResponse(token, rawRefreshToken, user.MustChangePassword, user.IsProfileComplete, DateTime.UtcNow.AddHours(2)));
   }
 
   [HttpPost("refresh")]
@@ -106,7 +106,7 @@ public class AuthController(IUserRepository userRepo, IRefreshTokenRepository re
 
     Response.Cookies.Append("refreshToken", newRawRefreshToken, cookieOptions);
 
-    return Ok(new AuthResponse(newJwtToken, newRawRefreshToken));
+    return Ok(new AuthResponse(newJwtToken, newRawRefreshToken, user.MustChangePassword, user.IsProfileComplete, DateTime.UtcNow.AddHours(2)));
   }
 
   [HttpPost("logout")]
