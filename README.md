@@ -41,3 +41,9 @@ To apply database migrations, use the following command:
 dotnet ef migrations add NameOfMigration --project src/Cronolink.Infrastructure --startup-project src/Cronolink.API
 ```
 Migrations will be applied to the database when the application starts.
+
+## Testing
+To run the tests, use the following command:
+```bash
+dotnet test
+```

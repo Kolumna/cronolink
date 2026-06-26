@@ -47,8 +47,13 @@ public class ProjectsControllerTests
     [Fact]
     public async Task Create_ReturnsCreated()
     {
-        var req = new CreateProjectRequest("New Project");
-        _repo.CreateAsync(Arg.Any<Project>()).Returns(new Project { Id = Guid.NewGuid(), Name = req.Name, Passwords = new List<string>(), CreatedAt = DateTime.UtcNow });
+        var req = new CreateProjectRequest(Name: "Test Project",
+            Description: "desc",
+            GithubUrl: null,
+            FinishedAt: null,
+            Passwords: new List<PasswordRequestItem>(),
+            StartedAt: null);
+        _repo.CreateAsync(Arg.Any<Project>()).Returns(new Project { Id = Guid.NewGuid(), Name = req.Name, Description = req.Description, CreatedAt = DateTime.UtcNow });
 
         var result = await _controller.Create(req);
 
