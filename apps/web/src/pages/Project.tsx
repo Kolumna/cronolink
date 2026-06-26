@@ -7,6 +7,8 @@ import { CopyIcon, CuboidIcon, EditIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Project() {
+  const { id } = useParams();
+
   const query = useQuery({
     queryKey: ["project"],
     queryFn: async () => {
@@ -18,9 +20,8 @@ export default function Project() {
 
   const onCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-  }
+  };
 
-  const { id } = useParams();
   return (
     <div>
       <div className="flex justify-between items-center gap-4">
@@ -34,9 +35,11 @@ export default function Project() {
           </p>
         </div>
 
-        <Button variant="default" size="lg">
-          <EditIcon />
-          Edutuj Projekt
+        <Button variant="default" size="lg" asChild>
+          <Link to={`/projects/${id}/edit`}>
+            <EditIcon />
+            Edutuj Projekt
+          </Link>
         </Button>
       </div>
 
@@ -100,18 +103,29 @@ export default function Project() {
           <CardContent>
             <div className="flex flex-col gap-2">
               {query.data?.passwords.map((password) => (
-                <div key={password.name} className="flex flex-col items-start gap-2 border border-border p-4 rounded">
+                <div
+                  key={password.name}
+                  className="flex flex-col items-start gap-2 border border-border p-4 rounded"
+                >
                   <span>
-                    <strong>Login:</strong>{" "}
-                    {password.name}
-                    <Button variant="ghost" size="icon-sm" className="ml-2 p-1" onClick={() => onCopy(password.name)}>
+                    <strong>Login:</strong> {password.name}
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="ml-2 p-1"
+                      onClick={() => onCopy(password.name)}
+                    >
                       <CopyIcon />
                     </Button>
                   </span>
                   <span>
-                    <strong>Hasło:</strong>{" "}
-                    {password.value}
-                    <Button variant="ghost" size="icon-sm" className="ml-2 p-1" onClick={() => onCopy(password.value)}>
+                    <strong>Hasło:</strong> {password.value}
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="ml-2 p-1"
+                      onClick={() => onCopy(password.value)}
+                    >
                       <CopyIcon />
                     </Button>
                   </span>

@@ -1,6 +1,6 @@
-import { CuboidIcon, LayoutDashboardIcon, SettingsIcon, UsersIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { CuboidIcon, LayoutDashboardIcon, UsersIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { Button } from "./ui/button";
 
 const navItems = [
   {
@@ -18,11 +18,11 @@ const navItems = [
     href: "/users",
     icon: <UsersIcon />,
   },
-  {
-    label: "Ustawienia",
-    href: "/settings",
-    icon: <SettingsIcon />,
-  },
+  // {
+  //   label: "Ustawienia",
+  //   href: "/settings",
+  //   icon: <SettingsIcon />,
+  // },
 ];
 
 export const Navbar = () => {

@@ -10,6 +10,7 @@ import Settings from "./pages/Settings";
 import Users from "./pages/Users";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import Project from "./pages/Project";
+import EditProject from "./pages/EditProject";
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
             <Route element={<Layout />}>
               <Route path="/projects/add" element={<AddProject />} />
               <Route path="/projects/:id" element={<Project />} />
+              <Route path="/projects/:id/edit" element={<EditProject />} />
             </Route>
           </Route>
         </Routes>
