@@ -76,9 +76,10 @@ export function EditProjectForm({
       updateProject(newProject, project.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["project", project.id] });
 
       toast.success("Pomyślnie zaktualizowano projekt!");
-      navigate("/projects");
+      navigate(`/projects/${project.id}`);
     },
     onError: (error) => {
       console.error("Coś poszło nie tak:", error);

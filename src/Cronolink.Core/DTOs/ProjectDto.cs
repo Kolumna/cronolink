@@ -8,6 +8,8 @@ public record ProjectDto(
     string? Description,
     string? GithubUrl,
     List<ProjectPasswordDto> Passwords,
+    byte[]? CoverImage,
+    string? CoverImageContentType,
     DateTime? StartedAt,
     DateTime? FinishedAt,
     DateTime UpdatedAt,

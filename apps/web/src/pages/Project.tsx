@@ -1,16 +1,22 @@
 import { apiFetch } from "@/api/httpClient";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import type { Project } from "@/types";
 import { Button } from "@/components/ui/button";
 import { CopyIcon, CuboidIcon, EditIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function Project() {
   const { id } = useParams();
+  const queryClient = useQueryClient();
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const query = useQuery({
-    queryKey: ["project"],
+    queryKey: ["project", id],
     queryFn: async () => {
       const res = await apiFetch(`/api/projects/${id}`, { method: "GET" });
       if (!res.ok) throw new Error("Nie udało się pobrać projektu");
@@ -18,8 +24,39 @@ export default function Project() {
     },
   });
 
+  const handleCoverImageSubmit = async () => {
+    if (!coverFile) {
+      toast.error("Wybierz plik najpierw");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", coverFile);
+
+      const response = await apiFetch(`/api/projects/${id}/cover`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        toast.error(`Nie udało się wgrać okładki: ${errorText}`);
+        return;
+      }
+
+      toast.success("Okładka zapisana");
+      setCoverFile(null);
+      queryClient.invalidateQueries({ queryKey: ["project", id] });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const onCopy = (text: string) => {
     navigator.clipboard.writeText(text);
+    toast.success("Skopiowano do schowka");
   };
 
   return (
@@ -131,6 +168,36 @@ export default function Project() {
                   </span>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Obrazek projektu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {query.data?.coverImage && (
+              <img
+                src={`data:${query.data.coverImageContentType};base64,${query.data.coverImage}`}
+                alt="Logo projektu"
+                className="w-24 rounded"
+              />
+            )}
+            <div className="flex flex-col items-start gap-2 mt-8">
+              <span>Dodaj logo projektu</span>
+              <Input
+                type="file"
+                accept="image/*"
+                className="mt-2"
+                onChange={(e) => setCoverFile(e.target.files?.[0] ?? null)}
+              />
+              <Button
+                onClick={handleCoverImageSubmit}
+                disabled={isUploading || !coverFile}
+              >
+                {isUploading ? "Wysyłanie..." : "Wyślij"}
+              </Button>
             </div>
           </CardContent>
         </Card>

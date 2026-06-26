@@ -32,6 +32,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .WithOne(pp => pp.Project)
                 .HasForeignKey(pp => pp.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
+            e.Property(p => p.CoverImage).HasColumnType("bytea");
+            e.Property(p => p.CoverImageContentType).HasMaxLength(100);
             e.Property(p => p.StartedAt);
             e.Property(p => p.FinishedAt);
             e.Property(p => p.CreatedAt).HasDefaultValueSql("now()");

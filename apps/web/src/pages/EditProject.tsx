@@ -8,7 +8,7 @@ export default function EditProject() {
   const { id } = useParams();
 
   const query = useQuery({
-    queryKey: ["project"],
+    queryKey: ["project", id],
     queryFn: async () => {
       const res = await apiFetch(`/api/projects/${id}`, { method: "GET" });
       if (!res.ok) throw new Error("Nie udało się pobrać projektu");

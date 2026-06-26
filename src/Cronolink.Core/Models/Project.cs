@@ -9,6 +9,8 @@ public class Project
     public ICollection<ProjectPassword> Passwords { get; set; } = [];
     public DateTime? StartedAt { get; set; }
     public DateTime? FinishedAt { get; set; }
+    public byte[]? CoverImage { get; set; }
+    public string? CoverImageContentType { get; set; }
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

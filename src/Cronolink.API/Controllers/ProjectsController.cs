@@ -76,12 +76,52 @@ public class ProjectsController(IProjectRepository repo) : ControllerBase
         return NoContent();
     }
 
+    [HttpPost("{id:guid}/cover")]
+    public async Task<IActionResult> UploadCover(Guid id, IFormFile file)
+    {
+        if (file.Length == 0)
+            return BadRequest("Plik jest pusty.");
+
+        var allowedTypes = new[] { "image/png", "image/jpeg", "image/webp" };
+        if (!allowedTypes.Contains(file.ContentType))
+            return BadRequest("Niedozwolony typ pliku.");
+
+        const long maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.Length > maxSize)
+            return BadRequest("Plik jest za duży (max 5MB).");
+
+        var project = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Project {id} not found");
+
+        using var ms = new MemoryStream();
+        await file.CopyToAsync(ms);
+        project.CoverImage = ms.ToArray();
+        project.CoverImageContentType = file.ContentType;
+        project.UpdatedAt = DateTime.UtcNow;
+
+        await repo.UpdateAsync(project);
+        return NoContent();
+    }
+
+    [HttpGet("{id:guid}/cover")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetCover(Guid id)
+    {
+        var project = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Project {id} not found");
+
+        if (project.CoverImage is null)
+            return NotFound();
+
+        return File(project.CoverImage, project.CoverImageContentType ?? "application/octet-stream");
+    }
+
     private static ProjectDto ToDto(Project p) => new(
      p.Id,
      p.Name,
      p.Description,
      p.GithubUrl,
      p.Passwords.Select(pp => new ProjectPasswordDto(pp.Id, pp.Name, pp.Value)).ToList(),
+     p.CoverImage,
+     p.CoverImageContentType,
      p.StartedAt,
      p.FinishedAt,
      p.UpdatedAt,

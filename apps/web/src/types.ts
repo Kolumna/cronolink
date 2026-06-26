@@ -13,6 +13,8 @@ export type Project = {
   githubUrl?: string;
   startedAt?: string;
   finishedAt?: string;
+  coverImage?: string;
+  coverImageContentType?: string;
   passwords: ProjectPassword[];
   createdAt: string;
   updatedAt: string;

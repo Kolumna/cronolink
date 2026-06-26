@@ -66,7 +66,17 @@ export const ProjectGrid = ({ projects }: { projects: Project[] }) => {
               >
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    {project.name}{" "}
+                    <div className="flex items-center gap-4">
+                      {project.coverImage && (
+                        <img
+                          src={`data:${project.coverImageContentType};base64,${project.coverImage}`}
+                          alt={project.name}
+                          className="w-10 rounded"
+                        />
+                      )}
+                      {project.name}
+                    </div>
+
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="icon">
@@ -120,7 +130,9 @@ export const ProjectGrid = ({ projects }: { projects: Project[] }) => {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent className="flex-row justify-center gap-2">
-              <Link to="/projects/add"><Button>Utwórz Projekt</Button></Link>
+            <Link to="/projects/add">
+              <Button>Utwórz Projekt</Button>
+            </Link>
           </EmptyContent>
           <Button
             variant="link"
