@@ -89,24 +89,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<AppDbContext>();
-
-        await context.Database.MigrateAsync();
-
-        Console.WriteLine("Database migrations applied successfully.");
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating the database.");
-    }
-}
-
 await Cronolink.Infrastructure.Seed.AdminUserSeeder.SeedAsync(app.Services);
 
 app.UseMiddleware<ExceptionMiddleware>();
