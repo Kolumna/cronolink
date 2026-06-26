@@ -1,12 +1,10 @@
 import { apiFetch } from "@/api/httpClient";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import type { User } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { type ColumnDef } from "@tanstack/react-table";
-import { PlusIcon, UsersIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { UsersIcon } from "lucide-react";
 
 const getRoleColor = (role: string) => {
   switch (role) {
@@ -81,12 +79,12 @@ export default function Users() {
           </p>
         </div>
 
-        <Button variant="default" size="lg" asChild>
+        {/* <Button variant="default" size="lg" asChild>
           <Link to="/projects/add">
             <PlusIcon />
             Dodaj Użytkownika
           </Link>
-        </Button>
+        </Button> */}
       </div>
 
       <div className="w-full mt-8">
