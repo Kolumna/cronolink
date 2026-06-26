@@ -5,6 +5,9 @@ using Cronolink.Core.Interfaces;
 using Cronolink.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
+using Xunit;
+using System.Collections.Generic;
+using System;
 
 namespace Cronolink.Tests.Projects;
 
@@ -21,9 +24,9 @@ public class ProjectsControllerTests
     [Fact]
     public async Task GetAll_ReturnsOkWithProjects()
     {
-        _repo.GetAllAsync().Returns([
-            new Project { Id = 1, Name = "Test Project", CreatedAt = DateTime.UtcNow }
-        ]);
+        _repo.GetAllAsync().Returns(new List<Project> {
+            new Project { Id = Guid.NewGuid(), Name = "Test Project", CreatedAt = DateTime.UtcNow }
+        });
 
         var result = await _controller.GetAll();
 
@@ -35,16 +38,17 @@ public class ProjectsControllerTests
     [Fact]
     public async Task GetById_NotFound_ThrowsNotFoundException()
     {
-        _repo.GetByIdAsync(99).Returns((Project?)null);
+        var id = Guid.NewGuid();
+        _repo.GetByIdAsync(id).Returns((Project?)null);
 
-        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetById(99));
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetById(id));
     }
 
     [Fact]
     public async Task Create_ReturnsCreated()
     {
         var req = new CreateProjectRequest("New Project");
-        _repo.CreateAsync(Arg.Any<Project>()).Returns(new Project { Id = 1, Name = req.Name, CreatedAt = DateTime.UtcNow });
+        _repo.CreateAsync(Arg.Any<Project>()).Returns(new Project { Id = Guid.NewGuid(), Name = req.Name, Passwords = new List<string>(), CreatedAt = DateTime.UtcNow });
 
         var result = await _controller.Create(req);
 
